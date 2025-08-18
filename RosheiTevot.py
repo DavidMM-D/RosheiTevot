@@ -1,4 +1,6 @@
-import re
+import re  #special splitting
+
+# right to left printing 
 def hprint(text):
     h = list(text)
     h.reverse()
@@ -13,23 +15,21 @@ def find_roshei_tevot(name, filepath='Torah.txt'):
     words = re.split(r'[ \t\n\r\f\v:.,;\-{}?!]+', text)
     # Remove any empty strings, just in case
     words = [w for w in words if w]
-    #pesukim = text.split('.')
-    #pasuk = []
-    results = []
     
+    results = [] # to store matches    
 
     for i in range(len(words) - len(name) + 1):
         # Take a slice of consecutive words
         window = words[i:i+len(name)]
         
-        # Get Roshei Tevot (first letters)
-        roshei_tevot = ''.join(word[0] for word in window if word)
-        
+        # Get Roshei Tevot
+        roshei_tevot = ''.join(word[0] for word in window)
+        # check for match
         if roshei_tevot == name:
-           # pasuk.append([p for p in pesukim if window in p])
+            # reformat as R"oshei T"evot for display
             window = [word[:1] + '"' + word[1:] for word in window]
             results.append(window)
-    
+    # Display results
     if results:
         print("Match at words: ")
         for e in results:
