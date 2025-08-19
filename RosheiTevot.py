@@ -33,9 +33,14 @@ def find_roshei_tevot(name, filepath='Torah.txt'):
         roshei_tevot = ''.join(word[0] for word in window)
         # check for match
         if roshei_tevot == name:
-            # reformat as R"oshei T"evot for display
-            window = [word[:1] + '"' + word[1:] for word in window]
-            results.append(window)
+            # reformat as R"oshei T"evot in context for display
+            context = []
+            if i > 6 and < (len(words) - len(name) - 6):
+                context = words[i-7:i]
+            context += [word[:1] + '"' + word[1:] for word in window]
+            if i < (len(words) - len(name) - 6):
+                context += words[i + len(name):i + len(name) + 7]
+            results.append(context)
     # Display results
     print("name entered: ")
     hprint(name)
