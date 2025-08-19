@@ -1,4 +1,4 @@
-#**TO IMPROVE:**
+# **TO IMPROVE:**
 1. fix Torah.txt copyright issue
 2. verse lables were not deleted shirat hayam, vayhi binsoa haaron, and haazinu.
 3. keep verse lable.
