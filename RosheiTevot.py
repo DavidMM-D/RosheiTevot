@@ -7,7 +7,14 @@ def hprint(text):
     print(''.join(h))
     return
 
-def find_roshei_tevot(name, filepath='Torah.txt'):    
+def find_roshei_tevot(name, filepath='Torah.txt'):   
+    # replace all final letters in 'name' with normal counterparts
+    fin = 'ךםןףץ'
+    nor = 'כמנפצ'
+    for i in range(len(name)):
+        if name[i] in fin:
+            name = name[:i] + nor[fin.find(name[i])] + name[i+1:]
+
     with open(filepath, 'r', encoding='utf-8') as f:
         text = f.read()
             
@@ -30,12 +37,14 @@ def find_roshei_tevot(name, filepath='Torah.txt'):
             window = [word[:1] + '"' + word[1:] for word in window]
             results.append(window)
     # Display results
-    if results:
-        print("Match at words: ")
-        for e in results:
-            hprint(' '.join(e))
-    else:
-        print("No matches found.")
-
-name_to_find = input("Enter the name: ")
-find_roshei_tevot(name_to_find)
+    print("name entered: ")
+    hprint(name)
+    print("Number of matches: {}".format(len(results)))
+    for e in results:
+        hprint(' '.join(e))
+# Interface
+print("***Welcome to Roshei Tevot finder!***\n > Search for where a name (or word) appears as Roshei Tevot in the Torah.\n > At any time, enter 'exit' to exit.")
+while True:
+    name_to_find = input("Enter a name: ")
+    if name_to_find.lower() == 'exit': break
+    find_roshei_tevot(name_to_find)
