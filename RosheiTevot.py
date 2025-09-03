@@ -16,13 +16,13 @@ def RT(name):
         start = i + 1
 
      # Display results
-    print("name entered: ", name[::-1])
+    print("name entered: ", name)
     print("number of matches: {}".format(len(results)))
     for e in results: # for each element, that being the index of the first word of the match
         display = ''
         for i in range(len(name)):
             display += '{} '.format(word[e+i][0]) # build string of all words making up the match
-        print(display[::-1], str(word[e][1][1]) + ',', word[e][1][2], word[e][1][0][::-1]) # print text words RTL, ch(add comma), v, book RTL
+        print(display, str(word[e][1][1]) + ',', word[e][1][2], word[e][1][0]) # print text words, ch(add comma), v, book
     return
 
 with open('word_bk_ch_v.txt', 'r', encoding='utf-8') as w:
