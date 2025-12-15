@@ -22,7 +22,7 @@ def RT(name):
         display = ''
         for i in range(len(name)):
             display += '{} '.format(word[e+i][0]) # build string of all words making up the match
-        print(display, str(word[e][1][1]) + ',', word[e][1][2], word[e][1][0]) # print text words, ch(add comma), v, book
+        print(word[e][1], display) # print citation, then text words
     return
 
 with open('word_bk_ch_v.txt', 'r', encoding='utf-8') as w:

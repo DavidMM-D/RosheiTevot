@@ -1,4 +1,5 @@
 import re
+import json
 # for text of mechon-mamre.org (w/out vowels & cantiltn)
 # This script creates a dict of verses (book, chap, verse) : verse text
 # like ('בראשית', 1, 1): "בראשית ברא א' את השמים ואת הארץ"
@@ -11,9 +12,9 @@ gem = {} # to store dictionary of gematriot
 for c in letters[:10]: # defining א - י
     gem[c] = letters.find(c) + 1
 for c in letters[10:19]: # defining כ - ק
-    gem[c] = 20 + 10 * letters[10:20].find(c)
+    gem[c] = 10 * letters.find(c) - 80
 for c in letters[19:]: # defining ר - ת
-    gem[c] = 200 + 100 * letters [19:].find(c)
+    gem[c] = 100 * letters.find(c) - 1700
 
 pasuk = {}
 bk = "??" # default definition in case no book name found
@@ -103,7 +104,7 @@ for i in range(len(text)):
         pasuk[(bk, ch, v)] = re.split(r'\W+', pasuk[(bk, ch, v)])
 print('pasuk dict created')
 # write 2 files
-# make new dict using int's to index each word as key to tuple value containing word, book, chapter, verse.
+# make new dict using int's to index each word as key to value containing a list containing [word, book, chapter, verse], in that order.
 # Faulty handling of Kri/Ktiv
 word = {}
 i = 0
@@ -116,6 +117,16 @@ print('word dict created')
 with open("word_bk_ch_v.txt", 'w', encoding='utf-8') as w:
     w.write(str(word))
 print('word_bk_ch_v.txt written')
+# Copy word dictionary into JSON file
+i = 0
+for key, value in pasuk.items(): # reformat *word* json friendly (no tuples)
+    for w in value:
+        word[i] = [w, key[0], key[1], key[2]]
+        i += 1
+print('word dict reformatted')
+with open("word_bk_ch_v.json", "w", encoding="utf-8") as w:
+    json.dump(word, w, ensure_ascii=False)
+print('word_bk_ch_v.json written')
 # Join each word's first letter into a string and write it into its file
 allRT = ''.join([item[0][0] for item in word.values()])
 print('allRT str created')
