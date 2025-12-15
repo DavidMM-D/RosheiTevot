@@ -34,28 +34,25 @@ function RT(name, allRT, word) {
     }
 
     // Add summary information to the output
-    htmlOutput += `<h3>Results for: **${name}**</h3>`;
-    htmlOutput += `<p>Total matches found: **${results.length}**</p>`;
-
+    htmlOutput += `<h3>Results for: ${name}</h3>`;
     // If no matches, display a message
     if (results.length === 0) {
         htmlOutput += `<p>No Roshei Tevot matches found.</p>`;
     } else {
+        htmlOutput += `<p>Total matches found: ${results.length}</p>`;
         // Create an unordered list for the matches
         htmlOutput += `<ul>`; 
         for (const e of results) {
-            let display = '';
+            // Add each match as a list item, labeling book, chapter, and verse
+            htmlOutput += `<li>${word[e][1]} ${word[e][2]}, ${word[e][3]}: `;
             for (let i = 0; i < name.length; i++) {
                 // Highlight the first letter of each word to emphasize the match
                 // The rest of the word is added in a lighter color (via a <span>)
                 const wordText = word[e + i][0];
-                if (wordText.length > 0) {
-                    display += `<span style="font-weight:bold; color:black;">${wordText[0]}</span>`;
-                    display += `<span style="color:gray;">${wordText.substring(1)}</span>&nbsp;`;
-                }
+                htmlOutput += `<span style="font-weight:bold;">${wordText[0]}</span>`;
+                htmlOutput += `<span>${wordText.substring(1)}</span>&nbsp;`;
             }
-            // Add each match as a list item
-            htmlOutput += `<li>**${word[e][1]}** (Pasuk Citation): ${display}</li>`;
+            htmlOutput += `</li>`;
         }
         htmlOutput += `</ul>`;
     }
