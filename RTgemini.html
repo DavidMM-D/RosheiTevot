@@ -1,0 +1,246 @@
+<!DOCTYPE html> /* A Gemini generated visually revamped version */
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roshei Tevot Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #d4af37; /* Gold */
+            --bg-dark: #0f172a; /* Deep Blue/Black */
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Heebo', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+        }
+
+        /* The Background Animation Canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Glass Card Design */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Input Styling */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-direction: row-reverse; /* For correct button/input flow with RTL */
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.2rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            direction: rtl; 
+            text-align: right;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        button#go {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: var(--bg-dark);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        button#go:hover {
+            background-color: #fce38a;
+            transform: translateY(-2px);
+        }
+
+        button#go:active {
+            transform: translateY(0);
+        }
+
+        /* Output Area */
+        #output {
+            margin-top: 1rem;
+            text-align: right;
+            direction: rtl;
+            min-height: 20px;
+            color: #fff;
+            font-family: 'Frank Ruhl Libre', serif;
+        }
+
+        .note {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--glass-border);
+            padding-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="container">
+        <div class="card">
+            <h1>Roshei Tevot Finder</h1>
+            <p class="subtitle">Discover hidden patterns within the Torah</p>
+            
+            <div class="input-group">
+                <button id="go">Search</button>
+                <input id="input" type="text" placeholder="הכנס מילה..." autocomplete="off">
+            </div>
+
+            <div id="output"></div>
+            
+            <p class="note">
+                Note: A result spanning more than 1 pasuk cites only the opening pasuk. <br>
+                Errors may occur around Qri and Ktiv.
+            </p>
+        </div>
+    </div>
+
+    <script src="RT.js"></script>
+
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let rotation = 0;
+
+        // Hebrew Aleph-Bet for the nodes
+        const letters = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function draw231Gates() {
+            ctx.clearRect(0, 0, width, height);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.4;
+            const numPoints = 22;
+            
+            // Calculate points
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i / numPoints) * Math.PI * 2 + rotation;
+                points.push({
+                    x: centerX + Math.cos(angle) * radius,
+                    y: centerY + Math.sin(angle) * radius,
+                    char: letters[i]
+                });
+            }
+
+            // Draw Lines (The Gates)
+            ctx.lineWidth = 0.5;
+            // We use a very low opacity so the "center" glows where lines overlap
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.15)'; 
+
+            for (let i = 0; i < points.length; i++) {
+                for (let j = i + 1; j < points.length; j++) {
+                    ctx.beginPath();
+                    ctx.moveTo(points[i].x, points[i].y);
+                    ctx.lineTo(points[j].x, points[j].y);
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Letters (Nodes)
+            ctx.font = '20px "Frank Ruhl Libre"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#d4af37';
+
+            points.forEach(point => {
+                // Draw a small dot background for the letter so lines don't cross through it
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                
+                ctx.fillStyle = '#d4af37';
+                ctx.fillText(point.char, point.x, point.y);
+            });
+
+            rotation += 0.0005; // Slow rotation speed
+            requestAnimationFrame(draw231Gates);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        draw231Gates();
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// written by chatGPT and Gemini -- Must be checked and edited!
+// written by chatGPT and Gemini -- partially checked and fixed -- Must be fully checked and edited!
 // Get the output element once at the top for efficiency
 const outputElement = document.getElementById("output");
 
@@ -44,7 +44,7 @@ function RT(name, allRT, word) {
         htmlOutput += `<ul>`; 
         for (const e of results) {
             // Add each match as a list item, labeling book, chapter, and verse
-            htmlOutput += `<li>${word[e][1]} ${word[e][2]}, ${word[e][3]}: `;
+            htmlOutput += `<li>${word[e][1]}, פרק ${word[e][2]}, פסוק ${word[e][3]}: `;
             for (let i = 0; i < name.length; i++) {
                 // Highlight the first letter of each word to emphasize the match
                 // The rest of the word is added in a lighter color (via a <span>)
